@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Przykładowa Strona</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="content">
+        <div id="Jbzd" class="tabcontent" style="backroundColor='black' display: contents;">
+            <div>&nbsp;</div>
+
+            {% if jebmem.items() %}
+            {% for key, val in jebmem.items() %}
+
+            <div class="mems">
+                <div class="tyt"> -- {{ val[0] }} --</div>
+                <img src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')" tabindex="1">
+            </div>
+
+            {% endfor %}
+            {% endif %}
+
+            {% if jebvmem.items() %}
+            {% for key, val in jebvmem.items() %}
+
+            <div class="vidjo mems">
+                <div class="tyt"> -- {{ val[0] }} --</div>
+                <video autoplay="autoplay" loop="true" muted defaultmuted playsinline controls>
+                    <source src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')">
+                </video>
+            </div>
+
+            {% endfor %}
+            {% endif %}
+
+        </div>
+        <div id="Jm" class="tabcontent" style="display: none;">
+            <div>
+                &nbsp;
+            </div>
+
+            {% if urljm.items() %}
+            {% for key, val in urljm.items() %}
+
+            <div class="mems">
+                <div class="tyt"> -- {{ val[0] }} --</div>
+                <img src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')">
+            </div>
+
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div id="Demo" class="tabcontent" style="display: none;">
+            {% if demomemp.items() %}
+            {% for key, val in demomemp.items() %}
+            <div class="mems">
+                <div class="tyt"> -- --</div>
+                <img src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')" tabindex="1">
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if demomemv.items() %}
+            {% for key, val in demomemv.items() %}
+            <div class="vidjo mems">
+                <div class="tyt"> -- {{ val[0] }} --</div>
+                <video margin=-2 autoplay="autoplay" loop="true" muted defaultmuted playsinline controls>
+                    <source src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')">
+                </video>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div id="Kwjk" class="tabcontent" style="display: none;">
+            <div>&nbsp;</div>
+
+            <blockquote class="lista">
+                {% if kwmems.items() %}
+                {% for key, val in kwmems.items() %}
+
+                <div class="mems">
+                    <div class="tyt"> -- {{ val[0] }} --</div>
+                    <img src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')">
+                </div>
+
+                {% endfor %}
+                {% else %}
+                <div class="mems">
+                    <div class="tyt"> -- nima--</div>
+                    <img src="">
+                </div>
+                {% endif %}
+            </blockquote>
+        </div>
+        <div id="Redmik" class="tabcontent" style="display: none;">
+            {% if rmmems.items() %}
+            {% for key, val in rmmems.items() %}
+            <div class="mems">
+                <div class="tyt"> -- {{ val[0] }} --</div>
+                <img src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')">
+            </div>
+            {% endfor %}
+            {% endif %}
+
+        </div>
+        <div id="Atom" class="tabcontent" style="display: none;">
+            {% if agmems.items() %}
+            {% for key, val in agmems.items() %}
+            <div class="mems">
+                <div class="tyt"> -- {{ val[0] }} --</div>
+                <img src="{{ val[1] }}" onclick="window.open('{{val[2]}}','_blank')">
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+
+    </div>
+</div>
+<div class="sidebar">
+    <button id="toggle-button" class="circle-button">Ukryj</button>
+    <div id="button-group">
+
+        <button class="btn btn1" onclick="openPage('Jbzd')">Jbzd</button>
+        <button class="btn btn3" onclick="openPage('Demo')">Demotywatory</button>
+        <button class="btn btn4" onclick="openPage('Kwjk')">Kwejk</button>
+        <button class="btn btn5" onclick="openPage('Redmik')">Redmik</button>
+        <button class="btn btn6" onclick="openPage('Atom')">Atomowe Grabie</button>
+    </div>
+</div>
+<button id="show-sidebar" class="circle-button">Pokaż</button>
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
