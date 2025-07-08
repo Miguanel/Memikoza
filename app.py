@@ -17,7 +17,7 @@ page_limits = {
     "ag_limit": limits[5]
 }
 
-mm.fresh_mems(page_limits, 60 * 5)
+mm.fresh_mems(page_limits, 60 * 30)
 
 
 @app.route('/scrape')
