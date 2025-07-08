@@ -1,0 +1,187 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+}
+
+.content {
+    flex: 1;
+    overflow: auto;
+}
+
+.content iframe {
+    width: 100%;
+    height: 2000px; /* Długa ramka */
+}
+
+.sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f4f4f4;
+    border-left: 1px solid #ddd;
+    padding-top: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+}
+
+.sidebar button {
+    width: 120px;
+    margin: 10px 0;
+    padding: 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#toggle-button {
+    background-color: #343a40;
+}
+
+.sidebar .btn1 {
+    background-color: #007BFF;
+}
+
+.sidebar .btn2 {
+    background-color: #28A745;
+}
+
+.sidebar .btn3 {
+    background-color: #DC3545;
+}
+
+.sidebar .btn4 {
+    background-color: #FFC107;
+    color: black;
+}
+
+.sidebar .btn5 {
+    background-color: #17A2B8;
+}
+
+.sidebar .btn6 {
+    background-color: #6F42C1;
+}
+
+.sidebar .btn7 {
+    background-color: #FD7E14;
+}
+
+.sidebar button:hover {
+    opacity: 0.8;
+}
+
+.hidden {
+    transform: translateX(150px);
+}
+
+#button-group {
+    display: none; /* Ukryj grupę przycisków domyślnie */
+}
+
+#show-sidebar {
+    display: none; /* Ukryj przycisk domyślnie */
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    background-color: #343a40;
+}
+
+.circle-button {
+    width: 100px;
+    height: 100px;
+    background-color: #007BFF; /* Kolor tła */
+    border: none;
+    border-radius: 50%; /* Zaokrąglone rogi, tworzy kształt koła */
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s;
+}
+
+.circle-button:hover {
+    background-color: #0056b3; /* Zmiana koloru przy najechaniu */
+}
+
+.circle-button:active {
+    background-color: #003f7f; /* Zmiana koloru przy kliknięciu */
+}
+
+.sidebar .circle-button {
+    width: 100px;
+    height: 100px;
+    background-color: #007BFF; /* Kolor tła */
+    border: none;
+    border-radius: 50%; /* Zaokrąglone rogi, tworzy kształt koła */
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s;
+}
+
+.sidebar .circle-button:hover {
+    background-color: #0056b3; /* Zmiana koloru przy najechaniu */
+}
+
+.sidebar .circle-button:active {
+    background-color: #003f7f; /* Zmiana koloru przy kliknięciu */
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;        /* odstęp między przyciskami */
+  padding: 20px;    /* odrobina przestrzeni wokół */
+}
+.button-row button {
+  flex: 1;          /* wszystkie przyciski równomiernie się rozciągają */
+  padding: 10px 20px;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: transform 0.2s;
+}
+.button-row button:hover {
+  transform: scale(1.05);
+}
+/* indywidualne kolory */
+.btn-jbzd    { background-color: #e74c3c; }
+.btn-demo { background-color: #cbab69bf; }
+.btn-kwejk  { background-color: #2ecc71; }
+.btn-redmik   { background-color: #3498db; }
+.btn-atom { background-color: #f4444f; }
+
+
+.tyt {
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+
+section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;       /* musisz dobrać tak, żeby była nad resztą strony */
+  background: #fff;    /* lub inny kolor tła, żeby zasłaniała treść pod spodem */
+}
+body {
+  margin: 0;           /* usuń domyślne marginesy, jeśli są */
+  padding-top: 140px;   /* dodaj wysokość sekcji, żeby nie zasłaniała treści */
+}
