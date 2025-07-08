@@ -8,16 +8,15 @@
 
 </head>
 <body>
-<div class="sidebar">
-    <button id="toggle-button" class="circle-button">Ukryj</button>
-    <div id="button-group">
-
-        <button class="btn btn1" onclick="openPage('Jbzd')">Jbzd</button>
-        <button class="btn btn3" onclick="openPage('Demo')">Demotywatory</button>
-        <button class="btn btn4" onclick="openPage('Kwjk')">Kwejk</button>
-        <button class="btn btn5" onclick="openPage('Redmik')">Redmik</button>
-        <button class="btn btn6" onclick="openPage('Atom')">Atomowe Grabie</button>
-    </div>
+<div class="fab-container">
+  <button id="fab-main" class="fab-main circle-button">Pokaż</button>
+  <div id="fab-actions" class="fab-actions">
+    <button class="fab-action circle-button btn1" onclick="openPage('Jbzd')">Jbzd</button>
+    <button class="fab-action circle-button btn3" onclick="openPage('Demo')">Demotywatory</button>
+    <button class="fab-action circle-button btn4" onclick="openPage('Kwjk')">Kwejk</button>
+    <button class="fab-action circle-button btn5" onclick="openPage('Redmik')">Redmik</button>
+    <button class="fab-action circle-button btn6" onclick="openPage('Atom')">Atomowe<br>Grabie</button>
+  </div>
 </div>
 <button id="show-sidebar" class="circle-button">Pokaż</button>
 
