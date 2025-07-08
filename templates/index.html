@@ -8,6 +8,19 @@
 
 </head>
 <body>
+<div class="sidebar">
+    <button id="toggle-button" class="circle-button">Ukryj</button>
+    <div id="button-group">
+
+        <button class="btn btn1" onclick="openPage('Jbzd')">Jbzd</button>
+        <button class="btn btn3" onclick="openPage('Demo')">Demotywatory</button>
+        <button class="btn btn4" onclick="openPage('Kwjk')">Kwejk</button>
+        <button class="btn btn5" onclick="openPage('Redmik')">Redmik</button>
+        <button class="btn btn6" onclick="openPage('Atom')">Atomowe Grabie</button>
+    </div>
+</div>
+<button id="show-sidebar" class="circle-button">Pokaż</button>
+
 
 <div class="container">
     <div class="content">
@@ -122,19 +135,6 @@
 
     </div>
 </div>
-<div class="sidebar">
-    <button id="toggle-button" class="circle-button">Ukryj</button>
-    <div id="button-group">
-
-        <button class="btn btn1" onclick="openPage('Jbzd')">Jbzd</button>
-        <button class="btn btn3" onclick="openPage('Demo')">Demotywatory</button>
-        <button class="btn btn4" onclick="openPage('Kwjk')">Kwejk</button>
-        <button class="btn btn5" onclick="openPage('Redmik')">Redmik</button>
-        <button class="btn btn6" onclick="openPage('Atom')">Atomowe Grabie</button>
-    </div>
-</div>
-<button id="show-sidebar" class="circle-button">Pokaż</button>
-
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 

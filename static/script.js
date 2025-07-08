@@ -1,91 +1,45 @@
+// Ukryj sidebar po kliknięciu "Ukryj"
 document.getElementById('toggle-button').addEventListener('click', function() {
     var sidebar = document.querySelector('.sidebar');
-    var buttonGroup = document.getElementById('button-group');
     var showSidebarButton = document.getElementById('show-sidebar');
-
-    if (sidebar.classList.contains('hidden')) {
-        sidebar.classList.remove('hidden');
-        buttonGroup.style.display = 'flex';
-        buttonGroup.style.flexDirection = 'column'; // Ustawienie przycisków w pionie
-        showSidebarButton.style.display = 'none';
-    } else {
-        sidebar.classList.add('hidden');
-        buttonGroup.style.display = 'none';
-        showSidebarButton.style.display = 'block';
-    }
+    sidebar.classList.add('hidden');
+    showSidebarButton.style.display = 'flex';
 });
 
+// Pokaż sidebar po kliknięciu pływającego przycisku "Pokaż"
 document.getElementById('show-sidebar').addEventListener('click', function() {
     var sidebar = document.querySelector('.sidebar');
-    var buttonGroup = document.getElementById('button-group');
     var showSidebarButton = document.getElementById('show-sidebar');
-
     sidebar.classList.remove('hidden');
-    buttonGroup.style.display = 'flex';
-    buttonGroup.style.flexDirection = 'column'; // Ustawienie przycisków w pionie
     showSidebarButton.style.display = 'none';
 });
 
-function flyNavi() {
-    var navbar = document.getElementById("navbar");
-    var sticky = navbar.offsetTop;
-    var tc = document.getElementsByClassName("tabcontent");
-
-    if (window.pageYOffset >= sticky) {
-        navbar.classList.add("sticky");
-        for (i = 0; i < tc.length; i++) {
-            tc[i].style.marginTop = "35px";
-        }
+// Sidebar ukryty domyślnie na mobile przy starcie (na desktopie widoczny)
+window.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth <= 900) {
+        document.querySelector('.sidebar').classList.add('hidden');
+        document.getElementById('show-sidebar').style.display = 'flex';
     } else {
-        navbar.classList.remove("sticky");
-        for (i = 0; i < tc.length; i++) {
-            tc[i].style.marginTop = "10px";
-        }
+        document.querySelector('.sidebar').classList.remove('hidden');
+        document.getElementById('show-sidebar').style.display = 'none';
     }
-}
+});
 
-function clickCopy(uriel) {
-  var Url = uriel;
-  Url.innerHTML = window.location.href;
-  console.log(Url.innerHTML)
-  Url.select();
-  document.execCommand("copy");
-}
-function openPage(pageName, color) {
+// Przełączanie zakładek (tabcontent)
+function openPage(pageName) {
     window.scrollTo(0, 0);
-    var i, tabcontent, tablinks, tabbd;
+    var i, tabcontent;
     tabcontent = document.getElementsByClassName("tabcontent");
-
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
-
-    tablinks = document.getElementsByClassName("tablink");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].style.backgroundColor = "grey";
-    }
-
     document.getElementById(pageName).style.display = "contents";
-
-//    elmnt.style.backgroundColor = color;
-
-    tabbd = document.getElementsByTagName("html");
-    tabbd[0].style.backgroundColor = color;
-
 }
 
-document.getElementById('show-sidebar').click();
-document.getElementById('toggle-button').click();
-
-axios.get('/scrape?url=https://jbzd.pl')
-  .then(resp => {
-    // 1) sparsuj HTML do Document
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(resp.data, 'text/html');
-
-    // 2) selektorami DOM wyciągnij, co chcesz:
-    const titles = Array.from(doc.querySelectorAll('h2'))
-                        .map(h2 => h2.textContent);
-    console.log(titles);
-  })
-  .catch(console.error);
+// (opcjonalnie) Automatycznie pokaż pierwszą zakładkę po załadowaniu
+window.addEventListener('DOMContentLoaded', function() {
+    // Jeśli chcesz, żeby od razu był wybrany np. Jbzd:
+    if (document.getElementById('Jbzd')) {
+        openPage('Jbzd');
+    }
+});
