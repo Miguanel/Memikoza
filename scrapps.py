@@ -123,17 +123,39 @@ def get_demot(limit):
         # print('dmt picture in the page', len(mems))
         mems_vid = page_soup.find_all("div", attrs={"class": "demotivator_inner_video_wrapper"})
         mems_pic = page_soup.find_all("div", attrs={"class": "demot_pic"})
+        mems_pict = page_soup.find_all("div", attrs={"class": "demotivator pic "})
 
+        for mem in mems_pict:
+            try:
+                source = mem.find('source').get('src')
+                titleurl = mem.find('a', {'class', 'picwrapper'}).get('href')
+                title = titleurl.split('/')[0]
+                url = rp.url + titleurl
+                mp4 = source.split('.')[0]
+                if mp4 == "mp4":
+                    lisv[title] = [title, source, url]
+                else:
+                    lisp[title] = [title, source, url]
+
+            except:
+                pass
         for mem in mems_vid:
-            source = mem.find('source').get('src')
-            title = source.split('/')[-1].split('.')[0]
-            lisv[title] = [title, source, rp.url]
-
+            try:
+                source = mem.find('source').get('src')
+                title = source.split('/')[-1].split('.')[0]
+                lisv[title] = [title, source, rp.url]
+            except:
+                pass
         for mem in mems_pic:
-            source = mem.find('img').get('src')
-            title = source.split('/')[-1].split('.')[0]
-            lisp[title] = [title, source, rp.url]
-
+            try:
+                img = mem.find('img')
+                source = img.get('src')
+                title = img.get('alt')
+                url = str(rp.url) + str(mem.find('a').get('href'))
+                # title = source.split('/')[-1].split('.')[0]
+                lisp[title] = [title, source, url]
+            except:
+                pass
     temp = {'demomemp': lisp, 'demomemv': lisv}
 
     return temp

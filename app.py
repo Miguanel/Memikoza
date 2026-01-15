@@ -7,7 +7,7 @@ import logging
 app = Flask(__name__, template_folder="templates")
 
 mm = MemMenager()
-limits = [6, 3, 3, 9, 3, 3]
+limits = [16, 11, 13, 11, 11, 11]
 page_limits = {
     "jbzd_limit": limits[0],
     "jm_limit": limits[1],
