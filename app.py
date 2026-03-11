@@ -1,12 +1,13 @@
+import os
 import requests
-from memenager import MemMenager
-from flask import render_template, Flask, request
+from flask import Flask, request, jsonify
 from waitress import serve
+from memenager import MemMenager
 import logging
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__)
 
-mm = MemMenager()
+# Konfiguracja limitów z Twojego oryginalnego kodu
 limits = [16, 11, 13, 11, 11, 11]
 page_limits = {
     "jbzd_limit": limits[0],
@@ -17,43 +18,52 @@ page_limits = {
     "ag_limit": limits[5]
 }
 
-mm.fresh_mems(page_limits, 60 * 30)
 
-
-@app.route('/scrape')
-def scrape():
-    url = request.args.get('url')
-    r = requests.get(url)
-    print(url, r)
-    return r.text  # raw HTML, parsowany po stronie klienta
-
-
-@app.route("/")
+@app.route('/')
 def index():
-    jebmem = mm.memy['jebmem'] if 'jebmem' in mm.memy.keys() else {}
-    jebvmem = mm.memy['jebvmem'] if 'jebvmem' in mm.memy.keys() else {}
-    urljm = mm.memy['urljm'] if 'urljm' in mm.memy.keys() else {}
-    demomemp = mm.memy['demomemp'] if 'demomemp' in mm.memy.keys() else {}
-    demomemv = mm.memy['demomemv'] if 'demomemv' in mm.memy.keys() else {}
-    kwmems = mm.memy['kwmems'] if 'kwmems' in mm.memy.keys() else {}
-    rmmems = mm.memy['rmmems'] if 'rmmems' in mm.memy.keys() else {}
-    agmems = mm.memy['agmems'] if 'agmems' in mm.memy.keys() else {}
+    # Zwykły komunikat, żeby było widać, że serwer działa
+    return "Serwer skrapujący Memikozy działa poprawnie!", 200
 
-    return render_template('index.html',
-                           jebmem=jebmem,
-                           jebvmem=jebvmem,
-                           urljm=urljm,
-                           demomemp=demomemp,
-                           demomemv=demomemv,
-                           kwmems=kwmems,
-                           rmmems=rmmems,
-                           agmems=agmems,
-                           title='only for you :)')
+
+@app.route('/skrapuj-teraz')
+def scrape_now():
+    # Proste zabezpieczenie, żeby nikt obcy nie zajechał Ci serwera
+    # Pobierze token z URL: /skrapuj-teraz?token=TWOJE_HASLO
+    token = request.args.get('token')
+    secret_token = os.environ.get('SECRET_TOKEN', 'domyslne_haslo_123')
+
+    if token != secret_token:
+        return jsonify({"error": "Brak dostępu. Zły token."}), 403
+
+    print("Rozpoczynam pobieranie memów...")
+    mm = MemMenager()
+    mm.fresh_mems(page_limits, 0)  # 0 wymusza odświeżenie
+
+    # Zmienne środowiskowe z JSONBin
+    bin_id = os.environ.get('JSONBIN_BIN_ID')
+    api_key = os.environ.get('JSONBIN_API_KEY')
+
+    if not bin_id or not api_key:
+        return jsonify({"error": "Brak konfiguracji JSONBin w zmiennych środowiskowych."}), 500
+
+    # Wysłanie do bazy JSONBin.io
+    url = f'https://api.jsonbin.io/v3/b/{bin_id}'
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Master-Key': api_key
+    }
+
+    req = requests.put(url, json=mm.memy, headers=headers)
+
+    if req.status_code == 200:
+        return jsonify({"status": "sukces", "message": "Baza zaktualizowana!"}), 200
+    else:
+        return jsonify({"status": "błąd", "details": req.text}), req.status_code
 
 
 if __name__ == "__main__":
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.DEBUG)
-    serve(app, host='127.0.0.3')
-
-# pyinstaller --onefile --add-data "templates;templates" --add-data "static;static" kolbApp.py
+    # Na Renderze aplikacja musi nasłuchiwać na 0.0.0.0 i porcie ze zmiennej środowiskowej
+    port = int(os.environ.get('PORT', 5000))
+    serve(app, host='0.0.0.0', port=port)
