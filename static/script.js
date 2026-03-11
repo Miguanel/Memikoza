@@ -42,3 +42,75 @@ window.addEventListener('DOMContentLoaded', function() {
         openPage('Jbzd');
     }
 });
+
+// --- LOGIKA POBIERANIA I RENDEROWANIA DANYCH --- //
+
+// PODMIEŃ NA SWÓJ BIN ID Z JSONBIN.IO
+const BIN_ID = 'TUTAJ_WKLEJ_SWOJ_BIN_ID';
+// meta=false zwraca sam json bez metadanych serwisu
+const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}?meta=false`;
+
+async function loadData() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        document.getElementById('loadingMessage').style.display = 'none';
+
+        // Renderujemy poszczególne sekcje
+        renderSection('Jbzd', data.jebmem, data.jebvmem);
+        renderSection('Jm', data.urljm);
+        renderSection('Demo', data.demomemp, data.demomemv);
+        renderSection('Kwjk', data.kwmems);
+        renderSection('Redmik', data.rmmems);
+        renderSection('Atom', data.agmems);
+
+        // Otwórz domyślną zakładkę po załadowaniu
+        openPage('Jbzd');
+
+    } catch (error) {
+        console.error("Błąd podczas pobierania:", error);
+        document.getElementById('loadingMessage').innerText = "Błąd pobierania bazy memów :(";
+    }
+}
+
+// Uniwersalna funkcja do budowania HTML
+function renderSection(containerId, imagesObj = {}, videosObj = {}) {
+    const container = document.getElementById(containerId);
+    let htmlContent = '<div>&nbsp;</div>';
+
+    // Obrazki
+    if (imagesObj && Object.keys(imagesObj).length > 0) {
+        if (containerId === 'Kwjk') htmlContent += '<blockquote class="lista">';
+
+        Object.values(imagesObj).forEach(val => {
+            htmlContent += `
+            <div class="mems">
+                <div class="tyt"> -- ${val[0]} --</div>
+                <img src="${val[1]}" onclick="window.open('${val[2]}','_blank')" tabindex="1">
+            </div>`;
+        });
+
+        if (containerId === 'Kwjk') htmlContent += '</blockquote>';
+    }
+
+    // Wideo
+    if (videosObj && Object.keys(videosObj).length > 0) {
+        Object.values(videosObj).forEach(val => {
+            htmlContent += `
+            <div class="vidjo mems">
+                <div class="tyt"> -- ${val[0]} --</div>
+                <video autoplay="autoplay" loop="true" muted playsinline controls>
+                    <source src="${val[1]}" onclick="window.open('${val[2]}','_blank')">
+                </video>
+            </div>`;
+        });
+    }
+
+    container.innerHTML = htmlContent;
+}
+
+// Uruchomienie po załadowaniu DOM
+window.addEventListener('DOMContentLoaded', function() {
+    loadData();
+});
