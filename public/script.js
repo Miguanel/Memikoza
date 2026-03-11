@@ -36,12 +36,7 @@ function openPage(pageName) {
     document.getElementById(pageName).style.display = "contents";
 }
 
-// Otwórz domyślną zakładkę po załadowaniu
-window.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('Jbzd')) {
-        openPage('Jbzd');
-    }
-});
+
 
 // --- LOGIKA POBIERANIA I RENDEROWANIA DANYCH --- //
 
@@ -59,7 +54,7 @@ async function loadData() {
 
         // Renderujemy poszczególne sekcje
         renderSection('Jbzd', data.jebmem, data.jebvmem);
-        renderSection('Jm', data.urljm);
+        renderSection('Jm', data.urljm, {});
         renderSection('Demo', data.demomemp, data.demomemv);
         renderSection('Kwjk', data.kwmems);
         renderSection('Redmik', data.rmmems);
@@ -100,8 +95,8 @@ function renderSection(containerId, imagesObj = {}, videosObj = {}) {
             htmlContent += `
             <div class="vidjo mems">
                 <div class="tyt"> -- ${val[0]} --</div>
-                <video autoplay="autoplay" loop="true" muted playsinline controls>
-                    <source src="${val[1]}" onclick="window.open('${val[2]}','_blank')">
+                <video autoplay loop muted playsinline controls onclick="window.open('${val[2]}','_blank')" style="cursor:pointer">
+                    <source src="${val[1]}">
                 </video>
             </div>`;
         });
