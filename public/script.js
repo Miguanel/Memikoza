@@ -46,7 +46,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // --- LOGIKA POBIERANIA I RENDEROWANIA DANYCH --- //
 
 // PODMIEŃ NA SWÓJ BIN ID Z JSONBIN.IO
-const BIN_ID = 'TUTAJ_WKLEJ_SWOJ_BIN_ID';
+const BIN_ID = '69b1ee90c3097a1dd519978f';
 // meta=false zwraca sam json bez metadanych serwisu
 const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}?meta=false`;
 
