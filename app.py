@@ -1,13 +1,15 @@
+import json
 import os
 import requests
 from flask import Flask, request, jsonify
 from waitress import serve
 from memenager import MemMenager
 import logging
-
+from dotenv import load_dotenv
 app = Flask(__name__)
 
-# Konfiguracja limitów z Twojego oryginalnego kodu
+load_dotenv()
+# Konfiguracja limitów
 limits = [16, 11, 13, 11, 11, 11]
 page_limits = {
     "jbzd_limit": limits[0],
@@ -18,52 +20,48 @@ page_limits = {
     "ag_limit": limits[5]
 }
 
-
 @app.route('/')
 def index():
-    # Zwykły komunikat, żeby było widać, że serwer działa
     return "Serwer skrapujący Memikozy działa poprawnie!", 200
 
 
 @app.route('/skrapuj-teraz')
 def scrape_now():
-    # Proste zabezpieczenie, żeby nikt obcy nie zajechał Ci serwera
-    # Pobierze token z URL: /skrapuj-teraz?token=TWOJE_HASLO
     token = request.args.get('token')
-    secret_token = os.environ.get('SECRET_TOKEN', 'domyslne_haslo_123')
+    secret_token = os.environ.get('SECRET_TOKEN')
+    gist_id = os.environ.get('GIST_ID')
+    gh_token = os.environ.get('GITHUB_TOKEN')
 
     if token != secret_token:
-        return jsonify({"error": "Brak dostępu. Zły token."}), 403
+        return jsonify({"error": "Brak dostępu"}), 403
 
-    print("Rozpoczynam pobieranie memów...")
+    print("Pobieranie memów...")
     mm = MemMenager()
-    mm.fresh_mems(page_limits, 0)  # 0 wymusza odświeżenie
+    mm.fresh_mems(page_limits, 0)
 
-    # Zmienne środowiskowe z JSONBin
-    bin_id = os.environ.get('JSONBIN_BIN_ID')
-    api_key = os.environ.get('JSONBIN_API_KEY')
+    # Konwersja daty na string dla JSON
+    dane = mm.memy.copy()
+    if "last_used" in dane:
+        dane["last_used"] = dane["last_used"].strftime("%Y-%m-%d %H:%M:%S")
 
-    if not bin_id or not api_key:
-        return jsonify({"error": "Brak konfiguracji JSONBin w zmiennych środowiskowych."}), 500
-
-    # Wysłanie do bazy JSONBin.io
-    url = f'https://api.jsonbin.io/v3/b/{bin_id}'
-    headers = {
-        'Content-Type': 'application/json',
-        'X-Master-Key': api_key
+    # Wysyłka do GitHub Gist
+    url = f"https://api.github.com/gists/{gist_id}"
+    headers = {"Authorization": f"token {gh_token}"}
+    payload = {
+        "files": {
+            "memy.json": {"content": json.dumps(dane, indent=2)}
+        }
     }
 
-    req = requests.put(url, json=mm.memy, headers=headers)
+    req = requests.patch(url, json=payload, headers=headers)
 
     if req.status_code == 200:
-        return jsonify({"status": "sukces", "message": "Baza zaktualizowana!"}), 200
-    else:
-        return jsonify({"status": "błąd", "details": req.text}), req.status_code
-
+        return jsonify({"status": "sukces", "message": "Gist zaktualizowany!"}), 200
+    return jsonify({"status": "błąd", "details": req.text}), req.status_code
 
 if __name__ == "__main__":
     logger = logging.getLogger('waitress')
-    logger.setLevel(logging.DEBUG)
-    # Na Renderze aplikacja musi nasłuchiwać na 0.0.0.0 i porcie ze zmiennej środowiskowej
+    logger.setLevel(logging.INFO)
     port = int(os.environ.get('PORT', 5000))
+    print(f"Start serwera na porcie {port}")
     serve(app, host='0.0.0.0', port=port)

@@ -21,7 +21,6 @@ def run_scraper():
     # Pobieramy memy (limit czasu 0, żeby wymusić odświeżenie)
     mm.fresh_mems(page_limits, 0)
 
-    # Pobieramy zmienne środowiskowe z Render
     bin_id = os.environ.get('JSONBIN_BIN_ID')
     api_key = os.environ.get('JSONBIN_API_KEY')
 

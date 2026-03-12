@@ -37,13 +37,14 @@ function openPage(pageName) {
 }
 
 
-
 // --- LOGIKA POBIERANIA I RENDEROWANIA DANYCH --- //
 
-// PODMIEŃ NA SWÓJ BIN ID Z JSONBIN.IO
-const BIN_ID = '69b1ee90c3097a1dd519978f';
-// meta=false zwraca sam json bez metadanych serwisu
-const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}?meta=false`;
+const GIST_ID = '0df708e9d1973f6ea26340beba9a1038'; // Wklej tu ID, np. '69b1ee90c3097a1dd519978f'
+const GITHUB_USER = 'Miguanel'; // Wklej tu swój login z GitHuba
+
+// Adres URL do surowego pliku JSON
+const API_URL = `https://gist.githubusercontent.com/${GITHUB_USER}/${GIST_ID}/raw/memy.json?nocache=${new Date().getTime()}`;
+
 
 async function loadData() {
     try {
