@@ -120,7 +120,7 @@ def get_kwejks(limit):
         print(f"Pobieram stronę Kwejka ({pages_scraped + 1}/{limit}): {current_page_url}")
 
         # Pobieramy stronę synchronicznie, bo potrzebujemy URL następnej
-        soup = get_soup_by_url(current_page_url, headers=HEADERS)
+        soup = get_soup_by_url(current_page_url)
 
         if not soup:
             print(f"Błąd pobierania strony Kwejk: {current_page_url}")
