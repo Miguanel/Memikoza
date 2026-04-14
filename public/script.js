@@ -1,7 +1,8 @@
 // --- KONFIGURACJA GIST --- //
+const GIST_ID = '0df708e9d1973f6ea26340beba9a1038';
+const GITHUB_USER = 'Miguanel'; // <-- Tego najwyraźniej brakuje u Ciebie w pliku!
 
-
-// Adres URL do surowego pliku JSONsdf
+// Adres URL do surowego pliku JSON
 const API_URL = `https://gist.githubusercontent.com/${GITHUB_USER}/${GIST_ID}/raw/memy.json?nocache=${new Date().getTime()}`;
 
 // --- LOGIKA PERSYSTENCJI (LocalStorage) --- //
