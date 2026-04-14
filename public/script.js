@@ -153,10 +153,10 @@ async function loadData() {
 
         document.getElementById('loadingMessage').style.display = 'none';
 
-        renderSection('Jbzd', data.jebmem, data.jebvmem);
-        renderSection('Jm', data.urljm, data.urljvm || {});
+        renderSection('Jbzd', data.jebmem || {}, data.jebvmem || {});
+        renderSection('Jm', data.urljm || {}, data.urljvm || {});
         renderSection('Demo', data.demomemp || {}, data.demomemv || {});
-        renderSection('Kwjk', data.kwmems);
+        renderSection('Kwjk', data.kwmems || {}, data.kwvmems || {});
         renderSection('Redmik', data.rmmems);
         renderSection('Atom', data.agmems);
 

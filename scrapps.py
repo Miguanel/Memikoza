@@ -39,31 +39,28 @@ def get_jbzd(limit):
                     continue
                 mem_id = source_url.split('/')[-1]
 
-                # --- SEKREGRACJA: NAJPIERW OBRAZKI ---
-                img_tag = article.select_one('img.article-image')
-                if img_tag:
-                    src = img_tag.get('src', '')
-                    if src and mem_id:
-                        tempmem[mem_id] = [title_text, src, source_url]
-                        continue
-
-                        # --- 2. POPRAWKA WIDEO JBZD: Szerokie szukanie mp4 ---
-                # Szukamy głęboko w artykule, ignorując sztywne kontenery
+                # --- 1. POPRAWKA: NAJPIERW WIDEO ---
                 src = ''
                 source_tag = article.select_one('video source')
-
                 if source_tag:
                     src = source_tag.get('src', '')
                 else:
-                    # Alternatywa: czasami jbzd daje src prosto w tagu video
                     video_tag = article.select_one('video')
                     if video_tag:
                         src = video_tag.get('src', '')
 
                 if src and mem_id:
                     tempvid[mem_id] = [title_text, src, source_url]
+                    continue # <--- Przechodzimy dalej TYLKO jeśli to wideo
 
-            except Exception as e:
+                # --- 2. JEŚLI NIE MA WIDEO, SPRAWDZAMY OBRAZEK ---
+                img_tag = article.select_one('img.article-image')
+                if img_tag:
+                    src = img_tag.get('src', '')
+                    if src and mem_id:
+                        tempmem[mem_id] = [title_text, src, source_url]
+
+            except Exception:
                 pass
 
     temp = {"jebmem": tempmem, "jebvmem": tempvid}
