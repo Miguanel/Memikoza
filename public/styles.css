@@ -146,6 +146,10 @@ img, video {
     transform: translateY(0) scale(1);
     pointer-events: auto;
 }
+
+.fab-action.btn-autoscroll { background: #4CAF50; font-size: 1.4em; }
+
+.fab-actions.fab-active .fab-action:nth-child(9) { transition-delay: .0s; }
 .fab-actions.fab-active .fab-action:nth-child(8) { transition-delay: .05s; }
 .fab-actions.fab-active .fab-action:nth-child(7) { transition-delay: .1s; }
 .fab-actions.fab-active .fab-action:nth-child(6) { transition-delay: .15s; }

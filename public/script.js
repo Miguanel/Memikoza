@@ -92,6 +92,35 @@ function applyScaling(scaleValue) {
     });
 }
 
+// --- NOWY ALGORYTM AUTO-SCROLL --- //
+let autoScrollInterval = null;
+let isAutoScrolling = false;
+
+function toggleAutoScroll() {
+    const btn = document.getElementById('autoscroll-btn');
+    const scrollContainer = document.getElementById('scroll-container');
+
+    if (isAutoScrolling) {
+        // Zatrzymaj przewijanie (Pauza)
+        clearInterval(autoScrollInterval);
+        isAutoScrolling = false;
+        btn.textContent = '▶'; // Zmień ikonę na Play
+        btn.style.background = '#4CAF50'; // Zmień kolor z powrotem na zielony
+    } else {
+        // Uruchom przewijanie (Start)
+        isAutoScrolling = true;
+        btn.textContent = '⏸'; // Zmień ikonę na Pauzę
+        btn.style.background = '#f44336'; // Zmień kolor na czerwony (żeby było widać, że działa)
+
+        // Przewijaj kontener o 1 piksel w dół co 15 milisekund (płynny, wolny scroll)
+        autoScrollInterval = setInterval(() => {
+            if (scrollContainer) {
+                scrollContainer.scrollBy(0, 1);
+            }
+        }, 15);
+    }
+}
+
 // --- FAB - LOGIKA MENU (Speed Dial) --- //
 const fabMain = document.getElementById('fab-main');
 const fabActions = document.getElementById('fab-actions');
@@ -114,7 +143,7 @@ fabMain.addEventListener('click', function() {
 
 const allActions = document.querySelectorAll('.fab-action');
 allActions.forEach(btn => {
-    if (btn.classList.contains('btn-rotate') || btn.classList.contains('btn-scale')) return;
+    if (btn.classList.contains('btn-rotate') || btn.classList.contains('btn-scale') || btn.classList.contains('btn-autoscroll')) return;
 
     btn.addEventListener('click', () => {
         fabActions.classList.remove('fab-active');
@@ -126,6 +155,9 @@ allActions.forEach(btn => {
 
 // --- LOGIKA ZAKŁADEK, WIZUALIZACJI ZAKŁADEK I RENDEROWANIA --- //
 function openPage(pageName, btnElement) {
+    if (isAutoScrolling) {
+            toggleAutoScroll();
+        }
     document.getElementById('scroll-container').scrollTo(0, 0);
 
     var i, tabcontent;
