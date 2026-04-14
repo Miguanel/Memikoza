@@ -39,33 +39,92 @@ def get_jbzd(limit):
                     continue
                 mem_id = source_url.split('/')[-1]
 
-                # --- 1. POPRAWKA: NAJPIERW WIDEO ---
+                # --- 1. POPRAWKA: WIDEO NA PODSTAWIE ZRZUTU EKRANU ---
                 src = ''
-                source_tag = article.select_one('video source')
+                # Szukamy znacznika 'source' wewnątrz 'video', które jest w '.video-player'
+                source_tag = article.select_one('.video-player video source')
+
                 if source_tag:
                     src = source_tag.get('src', '')
                 else:
-                    video_tag = article.select_one('video')
+                    # Fallback na wypadek gdyby src był umieszczony bezpośrednio w tagu video
+                    video_tag = article.select_one('.video-player video')
                     if video_tag:
                         src = video_tag.get('src', '')
 
+                if not src:
+                    src = article.find("videoplyr")
+                    if not src:
+                        src = article.find(attrs={"class": "vue-plyr"})
+                    if not src:
+                        src = article.find(attrs={"type": "video/mp4"})
+                    if src:
+                        src = src.attrs['video_url']
+                        tempvid[mem_id] = [title_text, src, source_url]
+
                 if src and mem_id:
                     tempvid[mem_id] = [title_text, src, source_url]
-                    continue # <--- Przechodzimy dalej TYLKO jeśli to wideo
+                    continue  # <--- Przechodzimy dalej TYLKO jeśli to wideo
 
                 # --- 2. JEŚLI NIE MA WIDEO, SPRAWDZAMY OBRAZEK ---
-                img_tag = article.select_one('img.article-image')
+                # Twój zrzut pokazuje, że głównym kontenerem jest <div class="article-image">
+                # Szukamy obrazka, odrzucając ikonkę ograniczenia wiekowego (+18),
+                # która ma klasę "video-player-badge"
+                img_tag = article.select_one('.article-image img:not(.video-player-badge)')
+
+                # Dodatkowe zabezpieczenie na wypadek starej struktury JBZD
+                if not img_tag:
+                    img_tag = article.select_one('img.article-image')
+
                 if img_tag:
                     src = img_tag.get('src', '')
                     if src and mem_id:
                         tempmem[mem_id] = [title_text, src, source_url]
 
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"Błąd JBZD przy memie {mem_id if 'mem_id' in locals() else 'nieznanym'}: {e}")
 
     temp = {"jebmem": tempmem, "jebvmem": tempvid}
+    print(f"Pobrano JBZD: {len(tempmem)} img, {len(tempvid)} vid")
     return temp
 
+def get_jzd(limit):
+    """8 memes per page"""
+    tempmem = {}
+    tempvid = {}
+    url_list = ['https://jbzd.com.pl/str/' + str(i + 1) for i in range(0, limit)]
+    page_res = fgrequests.build(url_list)
+    for res in page_res:
+        sleep(time_beetween_get_soup)
+        soup = get_soup_from_response(res)
+        mems = soup.find_all('div', {'class', 'article-content'})
+        for mem in mems:
+            try:
+                tyt = mem.select_one('h3.article-title').a
+                url = tyt['href']
+                tyt = tyt.text.replace('\n', '').replace('  ', '')
+                art_cont = mem.select_one('.article-container')
+                mem_id = url.split('/')[-2]
+                if art_cont:
+                    artimg_src = art_cont.select_one("img[src]")
+                    if artimg_src:
+                        src = artimg_src["src"]
+                        tempmem[mem_id] = [tyt, src, url]
+                else:
+                    src = mem.find("videoplyr")
+                    if not src:
+                        src = mem.find(attrs={"class": "vue-plyr"})
+                    if not src:
+                        src = mem.find(attrs={"type": "video/mp4"})
+                    if src:
+                        src = src.attrs['video_url']
+                        tempvid[mem_id] = [tyt, src, url]
+            except Exception as e:
+                print(e)
+
+    temp = {"jebmem": tempmem, "jebvmem": tempvid}
+    print(f"Pobrano JBZD: {len(tempmem)} img, {len(tempvid)} vid")
+    return temp
 
 def get_kwejks(limit):
     # (Kwejk działał poprawnie, pozostawiony bez zmian logicznych, używa nowych nagłówków)
@@ -126,6 +185,7 @@ def get_kwejks(limit):
                     current_page_url = f"{base_url}{current_page_url}"
 
     temp = {'kwmems': final_images, 'kwvmems': final_videos}
+    print(f"Pobrano KWEJK: {len(final_images)} img, {len(final_videos)} vid")
     return temp
 
 
@@ -208,7 +268,7 @@ def get_jmonster(limit):
             pass
 
     temp = {'urljm': tempmem, 'urljvm': tempvid}
-    print(f"Pobrano JM: {len(tempmem)}")  # Zostawiam print do logów w Renderze!
+    print(f"Pobrano JM: {len(tempmem)} img, {len(tempvid)} vid")  # Zostawiam print do logów w Renderze!
     return temp
 
 
@@ -370,6 +430,7 @@ def get_redmik(limit):
                 pass
 
     temp = {'rmmems': tempmem}
+    print(f"Pobrano REDMIK: {len(tempmem)}")
     return temp
 
 
