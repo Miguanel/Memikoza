@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 load_dotenv()
 # Konfiguracja limitów
-limits = [16, 11, 13, 11, 11, 11]
+limits = [16, 11, 13, 22, 22, 22]
 page_limits = {
     "jbzd_limit": limits[0],
     "jm_limit": limits[1],

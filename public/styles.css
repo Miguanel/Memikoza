@@ -2,18 +2,36 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    overflow-x: hidden;
-    background: #fafafa;
+    background: #000;
+    color: white;
+    /* Blokujemy przewijanie bazowego body - przejmuje to wrapper */
+    overflow: hidden;
+}
+
+/* ===== ALGORYTM ROTACJI (Viewport Wrapper) ===== */
+#app-wrapper {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    /* Domyślne wymiary: 100% szerokości i wysokości ekranu */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* Kontener przycina, środek ma scrolla */
+    transition: transform 0.4s ease-in-out, width 0.4s ease, height 0.4s ease;
 }
 
 .container {
-    display: flex;
+    width: 100%;
     height: 100%;
+    /* Odblokowujemy scrollowanie dla obu osi wewnątrz wrappera */
+    overflow-y: auto;
+    overflow-x: auto;
+    display: flex;
 }
 
 .content {
     flex: 1;
-    overflow: auto;
     padding: 0 8px;
 }
 
@@ -21,24 +39,50 @@ img, video {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
+    display: block;
 }
 
+/* ===== Styl Mema ===== */
 .mems {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
     word-break: break-word;
+    border: 2px dashed rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    background-color: #111;
+    overflow: hidden;
 }
+
+.mems-title-area {
+    padding: 10px 15px;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.7);
+}
+
+.mems-content-area {
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .tyt {
     font-weight: bold;
     font-size: 1.2em;
     text-align: center;
+    margin: 0;
 }
 
-/* ===== Floating Action Button (Speed Dial) ===== */
+.tabcontent {
+    width: 100%;
+    /* Usunięto stary CSS 'transform' - przejmuje to natywne 'zoom' w JS */
+}
+
+/* ===== Floating Action Button (Zmienione na Absolute) ===== */
 .fab-container {
-    position: fixed;
+    /* Używamy absolute, by przyciski przykleiły się do rogu #app-wrapper */
+    position: absolute;
     right: 16px;
     bottom: 16px;
-    z-index: 1200;
+    z-index: 2000;
     display: flex;
     flex-direction: column-reverse;
     align-items: flex-end;
@@ -48,7 +92,7 @@ img, video {
     height: 60px;
     background: #343a40;
     color: #fff;
-    font-size: 1.05em;
+    font-size: 0.95em;
     border: none;
     border-radius: 50%;
     box-shadow: 0 2px 12px rgba(0,0,0,0.18);
@@ -65,7 +109,7 @@ img, video {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    pointer-events: none;  /* kliknij tylko gdy pokazane */
+    pointer-events: none;
 }
 .fab-action {
     opacity: 0;
@@ -88,32 +132,63 @@ img, video {
     font-weight: bold;
 }
 .fab-action.btn1 { background: #a26ec9; }
+.fab-action.btn2 { background: #6ec9a2; }
 .fab-action.btn3 { background: #d86d71; }
 .fab-action.btn4 { background: #c97f6e; }
 .fab-action.btn5 { background: #8481cf; }
 .fab-action.btn6 { background: #a24f9b; }
+
+.fab-action.btn-rotate { background: #ffa500; font-size: 1.2em; }
+.fab-action.btn-scale { background: #00bfff; font-size: 1.0em; }
 
 .fab-actions.fab-active .fab-action {
     opacity: 1;
     transform: translateY(0) scale(1);
     pointer-events: auto;
 }
-.fab-actions.fab-active .fab-action:nth-child(1) { transition-delay: .05s; }
-.fab-actions.fab-active .fab-action:nth-child(2) { transition-delay: .1s; }
-.fab-actions.fab-active .fab-action:nth-child(3) { transition-delay: .15s; }
-.fab-actions.fab-active .fab-action:nth-child(4) { transition-delay: .2s; }
-.fab-actions.fab-active .fab-action:nth-child(5) { transition-delay: .25s; }
+.fab-actions.fab-active .fab-action:nth-child(8) { transition-delay: .05s; }
+.fab-actions.fab-active .fab-action:nth-child(7) { transition-delay: .1s; }
+.fab-actions.fab-active .fab-action:nth-child(6) { transition-delay: .15s; }
+.fab-actions.fab-active .fab-action:nth-child(5) { transition-delay: .2s; }
+.fab-actions.fab-active .fab-action:nth-child(4) { transition-delay: .25s; }
+.fab-actions.fab-active .fab-action:nth-child(3) { transition-delay: .3s; }
+.fab-actions.fab-active .fab-action:nth-child(2) { transition-delay: .35s; }
+.fab-actions.fab-active .fab-action:nth-child(1) { transition-delay: .4s; }
 
 /* Responsive size for mobile */
 @media (max-width: 700px) {
-    .fab-main, .fab-action {
-        width: 50px;
-        height: 50px;
-        font-size: 0.85em;
-    }
+    .fab-main, .fab-action { width: 50px; height: 50px; font-size: 0.85em; }
     .fab-action { margin-bottom: 7px; }
 }
 @media (max-width: 450px) {
     .fab-main, .fab-action { width: 40px; height: 40px; font-size: 0.68em; }
     .fab-action { margin-bottom: 6px; }
+}
+
+/* ===== Panel Skalowania (Poszerzony) ===== */
+.scaling-panel {
+    position: absolute; /* Relative to #app-wrapper */
+    bottom: 90px;
+    right: 20px;
+    background: #222;
+    border: 2px solid white;
+    padding: 15px;
+    border-radius: 8px;
+    display: none;
+    z-index: 3000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    color: white;
+    font-family: monospace;
+    width: 350px; /* Nowa szerokość */
+}
+
+.scaling-header {
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#page-scale-slider {
+    width: 100%;
+    cursor: pointer;
 }
