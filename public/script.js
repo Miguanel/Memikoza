@@ -3,7 +3,8 @@ const GIST_ID = '0df708e9d1973f6ea26340beba9a1038';
 const GITHUB_USER = 'Miguanel'; // <-- Tego najwyraźniej brakuje u Ciebie w pliku!
 
 // Adres URL do surowego pliku JSON
-const API_URL = `https://gist.githubusercontent.com/${GITHUB_USER}/${GIST_ID}/raw/memy.json?nocache=${new Date().getTime()}`;
+//const API_URL = `https://gist.githubusercontent.com/${GITHUB_USER}/${GIST_ID}/raw/memy.json?nocache=${new Date().getTime()}`;
+const API_URL = `https://api.github.com/gists/${GIST_ID}?nocache=${new Date().getTime()}`;
 
 // --- LOGIKA PERSYSTENCJI (LocalStorage) --- //
 let currentRotation = 0;
@@ -180,8 +181,24 @@ function openPage(pageName, btnElement) {
 
 async function loadData() {
     try {
+        console.log("1. Rozpoczynam pobieranie bazy z API GitHuba...");
+
         const response = await fetch(API_URL);
-        const data = await response.json();
+        const gistData = await response.json();
+
+        // API GitHuba zwraca duży obiekt, nasza treść jest schowana w stringu 'content'
+        const rawContent = gistData.files['memy.json'].content;
+
+        console.log("2. Plik pobrany! Dekodowanie JSON...");
+        const data = JSON.parse(rawContent);
+
+        // --- LOGI DETEKTYWISTYCZNE ---
+        console.log("3. Zdekodowano strukturę. Dostępne kategorie:", Object.keys(data));
+        console.log(`-> JBZD: ${data.jebmem ? Object.keys(data.jebmem).length : 0} img, ${data.jebvmem ? Object.keys(data.jebvmem).length : 0} vid`);
+        console.log(`-> JoeMonster: ${data.urljm ? Object.keys(data.urljm).length : 0} img`);
+        console.log(`-> Demotywatory: ${data.demomemp ? Object.keys(data.demomemp).length : 0} img, ${data.demomemv ? Object.keys(data.demomemv).length : 0} vid`);
+        console.log(`-> Ostatnia aktualizacja w bazie: ${data.last_used}`);
+        // -----------------------------
 
         document.getElementById('loadingMessage').style.display = 'none';
 
@@ -189,15 +206,14 @@ async function loadData() {
         renderSection('Jm', data.urljm || {}, data.urljvm || {});
         renderSection('Demo', data.demomemp || {}, data.demomemv || {});
         renderSection('Kwjk', data.kwmems || {}, data.kwvmems || {});
-        renderSection('Redmik', data.rmmems);
-        renderSection('Atom', data.agmems);
+        renderSection('Redmik', data.rmmems || {});
+        renderSection('Atom', data.agmems || {});
 
-        // Otwórz domyślną zakładkę (i przypisz pierwszy przycisk jako czarny)
         openPage('Jbzd', document.querySelector('.btn1'));
 
     } catch (error) {
-        console.error("Błąd podczas pobierania:", error);
-        document.getElementById('loadingMessage').innerText = "Błąd pobierania bazy memów :(";
+        console.error("!!! BŁĄD KRYTYCZNY podczas pobierania lub parsowania bazy memów !!!", error);
+        document.getElementById('loadingMessage').innerText = "Błąd pobierania bazy memów. Sprawdź konsolę (F12).";
     }
 }
 

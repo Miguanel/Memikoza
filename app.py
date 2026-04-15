@@ -54,25 +54,39 @@ def scrape_now():
         # Data jest już poprawnie sformatowana jako tekst w memanager.py
         dane = mm.memy.copy()
 
+        # --- LOGI DETEKTYWISTYCZNE BACKENDU ---
+        print("\n--- DIAGNOSTYKA WYSYŁKI DO GITHUBA ---")
+        print(f"Klucze przygotowane do wysłania: {list(dane.keys())}")
+        if 'urljm' in dane:
+            print(f"Wysyłam JoeMonster: {len(dane['urljm'])} elementów.")
+        if 'demomemp' in dane:
+            print(f"Wysyłam Demotywatory: {len(dane['demomemp'])} elementów.")
+
+        json_string = json.dumps(dane, indent=2)
+        print(f"Rozmiar pliku JSON: {len(json_string) / 1024:.2f} KB")
+        print("----------------------------------------\n")
+
         # Wysyłka do GitHub Gist
         url = f"https://api.github.com/gists/{gist_id}"
         headers = {"Authorization": f"token {gh_token}"}
         payload = {
             "files": {
-                "memy.json": {"content": json.dumps(dane, indent=2)}
+                "memy.json": {"content": json_string}
             }
         }
 
         req = requests.patch(url, json=payload, headers=headers)
 
+        print(f"Odpowiedź z GitHuba: Status {req.status_code}")
+
         if req.status_code == 200:
             return jsonify({"status": "sukces", "message": "Gist zaktualizowany!"}), 200
         else:
+            print(f"Błąd wysyłki do Gista: {req.text}")
             return jsonify({"status": "błąd", "details": req.text}), req.status_code
 
     finally:
-        # ZAWSZE zdejmujemy kłódkę na końcu procesu, nawet jeśli wystąpił jakiś błąd!
-        # Dzięki temu serwer nie zablokuje się na zawsze.
+        # ZAWSZE zdejmujemy kłódkę na końcu procesu
         scrape_lock.release()
 
 
